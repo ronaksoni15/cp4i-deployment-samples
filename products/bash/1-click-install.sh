@@ -14,24 +14,24 @@
 #   - If running without parameters, all parameters must be set as environment variables
 #
 # PARAMETERS:
-#   -n : <JOB_NAMESPACE> (string), Namespace for the 1-click install
-#   -r : <navReplicaCount> (string), Platform navigator replicas, Defaults to 3
-#   -b : <demoDeploymentBranch> (string), The demo deployment branch to be used, Defaults to 'main'
-#   -u : <csDefaultAdminUser> (string), Default common service username. Defaults to "admin"
-#   -p : <csDefaultAdminPassword> (string), Common service defaul admin password
-#   -d : <demoPreparation> (string), If all demos are to be setup. Defaults to "false"
 #   -a : <eventEnabledInsuranceDemo> (string), If event enabled insurance demo is to be setup. Defaults to "false"
-#   -f : <drivewayDentDeletionDemo> (string),  If driveway dent deletion demo is to be setup. Defaults to "false"
+#   -b : <demoDeploymentBranch> (string), The demo deployment branch to be used, Defaults to 'main'
+#   -d : <demoPreparation> (string), If all demos are to be setup. Defaults to "false"
 #   -e : <demoAPICEmailAddress> (string), The email address APIC uses to notify of portal configuration. Defaults to "your@email.address"
+#   -f : <drivewayDentDeletionDemo> (string),  If driveway dent deletion demo is to be setup. Defaults to "false"
 #   -h : <demoAPICMailServerHost> (string), Host name of the mail server. Defaults to "smtp.mailtrap.io"
-#   -o : <demoAPICMailServerPort> (string), Port number of the mail server. Defaults to "2525"
-#   -m : <demoAPICMailServerUsername> (string), Username for the mail server. Defaults to "<your-username>"
-#   -q : <demoAPICMailServerPassword> (string), Password for the mail server.
 #   -j : <tempERKey> (string), IAM API key for accessing the entitled registry.
 #   -k : <tempRepo> (string), For accessing different Registry
 #   -l : <DOCKER_REGISTRY_USER> (string), Docker registry username
+#   -m : <demoAPICMailServerUsername> (string), Username for the mail server. Defaults to "<your-username>"
+#   -n : <JOB_NAMESPACE> (string), Namespace for the 1-click install
+#   -o : <demoAPICMailServerPort> (string), Port number of the mail server. Defaults to "2525"
+#   -p : <csDefaultAdminPassword> (string), Common service defaul admin password
+#   -q : <demoAPICMailServerPassword> (string), Password for the mail server.
+#   -r : <navReplicaCount> (string), Platform navigator replicas, Defaults to 3
 #   -s : <DOCKER_REGISTRY_PASS> (string), Docker registry password
 #   -t : <ENVIRONMENT> (string), Environment for installation, 'staging' when you want to use the staging entitled registry
+#   -u : <csDefaultAdminUser> (string), Default common service username. Defaults to "admin"
 #   -v : <useFastStorageClass> (string), If using fast storage class for installation. Defaults to 'false'
 #   -w : <testDrivewayDentDeletionDemoE2E> (string), If testing the Driveway dent deletion demo E2E. Defaults to 'false'
 #
