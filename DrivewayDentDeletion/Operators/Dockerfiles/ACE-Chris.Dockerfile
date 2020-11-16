@@ -1,3 +1,3 @@
-FROM cp.icr.io/cp/appc/ace-server-prod@sha256:dd3c1e8d204b37775b792fc25a0bad4daba4fa35cd5aad996b29b1db63959baf
+FROM cp.icr.io/cp/appc/ace-server-prod@sha256:bdeb8b839be9e095bf3c74be8b9f02f54cf6c0a740b8f45f93d01265549d9e83
 ENV MQCERTLABL=aceclient
 COPY CrumpledV1.bar /home/aceuser/initial-config/bars/DrivewayDemo.bar
