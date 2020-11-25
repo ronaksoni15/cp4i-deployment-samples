@@ -47,7 +47,7 @@ function divider() {
 }
 
 function usage() {
-  echo "Usage: $0 -a <eventEnabledInsuranceDemo> -b <demoDeploymentBranch> -d <demoPreparation> -e <demoAPICEmailAddress> -f <drivewayDentDeletionDemo> -h <demoAPICMailServerHost> -j <tempERKey> -k <tempRepo> -l <DOCKER_REGISTRY_USER> -m <demoAPICMailServerUsername> -n <JOB_NAMESPACE> -o <demoAPICMailServerPort> -p <csDefaultAdminPassword> -q <demoAPICMailServerPassword> -r <navReplicaCount> -s <DOCKER_REGISTRY_PASS> -t <ENVIRONMENT> -u <csDefaultAdminUser> -v <useFastStorageClass>"
+  echo "Usage: $0 -a <eventEnabledInsuranceDemo> -b <demoDeploymentBranch> -d <demoPreparation> -e <demoAPICEmailAddress> -f <drivewayDentDeletionDemo> -h <demoAPICMailServerHost> -j <tempERKey> -k <tempRepo> -l <DOCKER_REGISTRY_USER> -m <demoAPICMailServerUsername> -n <JOB_NAMESPACE> -o <demoAPICMailServerPort> -p <csDefaultAdminPassword> -q <demoAPICMailServerPassword> -r <navReplicaCount> -s <DOCKER_REGISTRY_PASS> -t <ENVIRONMENT> -u <csDefaultAdminUser> -v <useFastStorageClass> -x <defaultBlockStorage> -y <defaultFileStorage"
   divider
   exit 1
 }
@@ -61,7 +61,7 @@ missingParams="false"
 IMAGE_REPO="cp.icr.io"
 pwdChange="true"
 
-while getopts "a:b:d:e:f:h:j:k:l:m:n:o:p:q:r:s:t:u:v:w:" opt; do
+while getopts "a:b:d:e:f:h:j:k:l:m:n:o:p:q:r:s:t:u:v:w:x:y:" opt; do
   case ${opt} in
   a)
     eventEnabledInsuranceDemo="$OPTARG"
@@ -122,6 +122,12 @@ while getopts "a:b:d:e:f:h:j:k:l:m:n:o:p:q:r:s:t:u:v:w:" opt; do
     ;;
   w)
     testDrivewayDentDeletionDemoE2E="$OPTARG"
+    ;;
+  x)
+    defaultBlockStorage="$OPTARG"
+    ;;
+  y)
+    defaultFileStorage="$OPTARG"
     ;;
   \?)
     usage
@@ -184,6 +190,18 @@ if [[ -z "${testDrivewayDentDeletionDemoE2E// /}" ]]; then
   testDrivewayDentDeletionDemoE2E="false"
 fi
 
+if [[ -z "${defaultBlockStorage// /}" ]]; then
+  echo -e "$info INFO: Default block storage parameter is empty. Setting the default of 'cp4i-block-performance' for it."
+  defaultBlockStorage="cp4i-block-performance"
+fi
+
+if [[ -z "${defaultFileStorage// /}" ]]; then
+  echo -e "$info INFO: Default file storage parameter is empty. Setting the default of 'cp4i-block-performance' for it."
+  defaultFileStorage="cp4i-block-performance"
+fi
+
+
+
 if [[ "$missingParams" == "true" ]]; then
   divider
   exit 1
@@ -207,6 +225,8 @@ echo -e "$info Docker registry username: '$DOCKER_REGISTRY_USER'"
 echo -e "$info Environment for installation: '$ENVIRONMENT'"
 echo -e "$info If using fast storage for the installation: '$useFastStorageClass'"
 echo -e "$info If testing the driveway dent deletion demo E2E: '$testDrivewayDentDeletionDemoE2E'"
+echo -e "$info Default block storage: '$defaultBlockStorage'"
+echo -e "$info Default file storage: '$defaultFileStorage'"
 
 divider
 
@@ -289,8 +309,31 @@ fi
 
 divider
 
-echo -e "$info INFO: Current storage classes:"
+echo -e "$info INFO: Current storage classes available:"
 oc get sc
+
+# Check storage classes are present & valid
+echo -e "$info: INFO Checking chosen storage classes are valid"
+
+echo -e "$info Selected block storage: '$defaultBlockStorage'"
+
+if oc get sc $defaultBlockStorage >/dev/null 2>&1; then
+  echo "$tick INFO: Selected block storage is valid"
+else
+  echo "$cross ERROR: Selected block storage is invalid"
+  divider
+  exit 1
+fi
+
+echo -e "$info Selected file storage: '$defaultFileStorage'"
+
+if oc get sc $defaultFileStorage >/dev/null 2>&1; then
+  echo "$tick INFO: Selected file storage is valid"
+else
+  echo "$cross ERROR: Selected file storage is invalid"
+  divider
+  exit 1
+fi
 
 divider
 
