@@ -230,17 +230,7 @@ ls -al /tmp
 echo -e "INFO: Got the password for elastic search..."
 
 echo -e "\nINFO: Creating secret for elastic search connector"
-<<<<<<< HEAD
 oc get secret -n ${ELASTIC_NAMESPACE} $ELASTIC_CR_NAME-es-http-certs-public -o json | jq -r '.data["ca.crt"]' | base64 --decode >/tmp/ca.crt
-=======
-echo "pwd: $(pwd)"
-ls -lFA $(pwd)/../
-echo "whoami: $(whoami)"
-echo "\$HOME: $HOME"
-cd $HOME
-echo "pwd: $(pwd)"
-oc get secret -n ${ELASTIC_NAMESPACE} $ELASTIC_CR_NAME-es-http-certs-public -o json | jq -r '.data["ca.crt"]' | base64 --decode >ca.crt
->>>>>>> 56b054fec59f2ebaaab16903d2ae9ebf4dac15c2
 rm elastic-ts.jks
 
 TRUSTSTORE_PASSWORD=$(
