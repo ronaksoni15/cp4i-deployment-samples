@@ -221,6 +221,12 @@ ELASTIC_USER="elastic"
 echo -e "INFO: Got the password for elastic search..."
 
 echo -e "\nINFO: Creating secret for elastic search connector"
+echo "pwd: $(pwd)"
+ls -lFA $(pwd)/../
+echo "whoami: $(whoami)"
+echo "\$HOME: $HOME"
+cd $HOME
+echo "pwd: $(pwd)"
 oc get secret -n ${ELASTIC_NAMESPACE} $ELASTIC_CR_NAME-es-http-certs-public -o json | jq -r '.data["ca.crt"]' | base64 --decode >ca.crt
 rm elastic-ts.jks
 
