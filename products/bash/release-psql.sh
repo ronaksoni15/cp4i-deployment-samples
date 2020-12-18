@@ -14,9 +14,15 @@
 #
 # PARAMETERS:
 #   -n : <POSTGRES_NAMESPACE> (string), Defaults to 'cp4i'
+#   -m : <metadata_name> (string)
+#   -u : <metadata_uid> (string)
 #
 # USAGE:
 #   ./release-psql.sh
+#
+#   To add ownerReferences for the demos operator
+#     ./release-ar.sh -m metadata_name -u metadata_uid
+
 #******************************************************************************
 
 function usage() {
@@ -26,10 +32,16 @@ function usage() {
 
 POSTGRES_NAMESPACE="cp4i"
 
-while getopts "n:u:d:p:" opt; do
+while getopts "n:m:u:" opt; do
   case ${opt} in
   n)
     POSTGRES_NAMESPACE="$OPTARG"
+    ;;
+  m)
+    metadata_name="$OPTARG"
+    ;;
+  u)
+    metadata_uid="$OPTARG"
     ;;
   \?)
     usage
@@ -59,8 +71,17 @@ echo "checking tmp dir"
 
 ls -al /tmp
 
+if [[ ! -z ${metadata_uid} && ! -z ${metadata_name} ]]; then
+echo "INFO: oc process -n openshift postgresql-persistent --param-file=/tmp/postgres.env > /tmp/postgres.json | 
+jq '.items[3].metadata += {"ownerReferences": [{"apiVersion": "integration.ibm.com/v1beta1", "kind": "Demo", "name": "$metadata_name", "uid": "$metadata_uid"}]}' /tmp/postgres.json |
+oc apply -n ${POSTGRES_NAMESPACE} -f -"
+oc process -n openshift postgresql-persistent --param-file=/tmp/postgres.env > /tmp/postgres.json | 
+jq '.items[3].metadata += {"ownerReferences": [{"apiVersion": "integration.ibm.com/v1beta1", "kind": "Demo", "name": "$METADATA_NAME", "uid": "$METADATA_UID"}]}' /tmp/postgres.json |
+oc apply -n ${POSTGRES_NAMESPACE} -f -
+else
 echo "INFO: oc process -n openshift postgresql-persistent --param-file=/tmp/postgres.env | oc apply -n ${POSTGRES_NAMESPACE} -f -"
 oc process -n openshift postgresql-persistent --param-file=/tmp/postgres.env | oc apply -n ${POSTGRES_NAMESPACE} -f -
+fi
 
 echo "INFO: Waiting for postgres to be ready in the ${POSTGRES_NAMESPACE} namespace"
 oc wait -n ${POSTGRES_NAMESPACE} --for=condition=available --timeout=20m deploymentconfig/postgresql
