@@ -72,12 +72,12 @@ echo "checking tmp dir"
 ls -al /tmp
 
 if [[ ! -z ${metadata_uid} && ! -z ${metadata_name} ]]; then
-echo "INFO: oc process -n openshift postgresql-persistent --param-file=/tmp/postgres.env > /tmp/postgres.json | 
-jq '.items[3].metadata += {"ownerReferences": [{"apiVersion": "integration.ibm.com/v1beta1", "kind": "Demo", "name": "$metadata_name", "uid": "$metadata_uid"}]}' /tmp/postgres.json |
-oc apply -n ${POSTGRES_NAMESPACE} -f -"
-oc process -n openshift postgresql-persistent --param-file=/tmp/postgres.env > /tmp/postgres.json | 
-jq '.items[3].metadata += {"ownerReferences": [{"apiVersion": "integration.ibm.com/v1beta1", "kind": "Demo", "name": "$METADATA_NAME", "uid": "$METADATA_UID"}]}' /tmp/postgres.json |
-oc apply -n ${POSTGRES_NAMESPACE} -f -
+echo "INFO: oc process -n openshift postgresql-persistent --param-file=/tmp/postgres.env > /tmp/postgres.json
+jq '.items[3].metadata += {"ownerReferences": [{"apiVersion": "integration.ibm.com/v1beta1", "kind": "Demo", "name": "$metadata_name", "uid": "$metadata_uid"}]}' /tmp/postgres.json
+oc apply -n ${POSTGRES_NAMESPACE} -f /tmp/postgres.json"
+oc process -n openshift postgresql-persistent --param-file=/tmp/postgres.env > /tmp/postgres.json
+jq '.items[3].metadata += {"ownerReferences": [{"apiVersion": "integration.ibm.com/v1beta1", "kind": "Demo", "name": "$metadata_name", "uid": "$metadata_uid"}]}' /tmp/postgres.json > /tmp/postgres-owner-ref.json
+oc apply -n ${POSTGRES_NAMESPACE} -f /tmp/postgres-owner-ref.json
 else
 echo "INFO: oc process -n openshift postgresql-persistent --param-file=/tmp/postgres.env | oc apply -n ${POSTGRES_NAMESPACE} -f -"
 oc process -n openshift postgresql-persistent --param-file=/tmp/postgres.env | oc apply -n ${POSTGRES_NAMESPACE} -f -
