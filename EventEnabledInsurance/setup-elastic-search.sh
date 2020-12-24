@@ -14,21 +14,15 @@
 # PARAMETERS:
 #   -e : <ELASTIC_NAMESPACE> (string), Defaults to 'elasticsearch', the namespace where elastic search is installed to
 #   -n : <NAMESPACE> (string), Defaults to 'cp4i'
-#   -m : <metadata_name> (string)
-#   -u : <metadata_uid> (string)
 #
 #   With defaults values
 #     ./setup-elastic-search.sh
 #
 #   With overridden values
 #     ./setup-elastic-search.sh -n <NAMESPACE> -e <ELASTIC_NAMESPACE>
-#
-#   To add ownerReferences for the demos operator
-#     ./release-ace-dashboard.sh -m metadata_name -u metadata_uid
-
 
 function usage() {
-  echo "Usage: $0 -n <NAMESPACE> -e <ELASTIC_NAMESPACE> -m <metadata_name> -u <metadata_uid>"
+  echo "Usage: $0 -n <NAMESPACE> -e <ELASTIC_NAMESPACE>"
   exit 1
 }
 
@@ -41,19 +35,13 @@ NAMESPACE="cp4i"
 ELASTIC_NAMESPACE="elasticsearch"
 ELASTIC_SUBSCRIPTION_NAME="elastic-cloud-eck"
 
-while getopts "n:e:m:u:" opt; do
+while getopts "n:e:" opt; do
   case ${opt} in
   n)
     NAMESPACE="$OPTARG"
     ;;
   e)
     ELASTIC_NAMESPACE="$OPTARG"
-    ;;
-  m)
-    metadata_name="$OPTARG"
-    ;;
-  u)
-    metadata_uid="$OPTARG"
     ;;
   \?)
     usage
@@ -156,18 +144,21 @@ wait_for_subscription $ELASTIC_NAMESPACE $ELASTIC_SUBSCRIPTION_NAME
 
 echo -e "\n----------------------------------------------------------------------------------------------------------------------------------------------------------\n"
 
+METADATA_NAME = $(oc get configmap -n $namespace operator-info -o json | jq -r '.data.METADATA_NAME')
+METADATA_UID = $(oc get configmap -n $namespace operator-info -o json | jq -r '.data.METADATA_UID')
+
 cat <<EOF | oc apply -f -
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
   name: $ELASTIC_CR_NAME
   namespace: $ELASTIC_NAMESPACE
-  $(if [[ ! -z ${metadata_uid} && ! -z ${metadata_name} ]]; then
+  $(if [[ ! -z ${METADATA_UID} && ! -z ${METADATA_NAME} ]]; then
   echo "ownerReferences:
     - apiVersion: integration.ibm.com/v1beta1
       kind: Demo
-      name: ${metadata_name}
-      uid: ${metadata_uid}"
+      name: ${METADATA_NAME}
+      uid: ${METADATA_UID}"
   fi)
 spec:
   version: 7.9.1

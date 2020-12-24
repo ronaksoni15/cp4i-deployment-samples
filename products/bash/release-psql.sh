@@ -14,34 +14,22 @@
 #
 # PARAMETERS:
 #   -n : <POSTGRES_NAMESPACE> (string), Defaults to 'cp4i'
-#   -m : <METADATA_NAME> (string)
-#   -u : <METADATA_UID> (string)
 #
 # USAGE:
 #   ./release-psql.sh
-#
-#   To add ownerReferences for the demos operator
-#     ./release-ar.sh -m METADATA_NAME -u METADATA_UID
-
 #******************************************************************************
 
 function usage() {
-  echo "Usage: $0 -n <POSTGRES_NAMESPACE> -m <METADATA_NAME> -u <METADATA_UID>"
+  echo "Usage: $0 -n <POSTGRES_NAMESPACE>"
   exit 1
 }
 
 POSTGRES_NAMESPACE="cp4i"
 
-while getopts "n:m:u:" opt; do
+while getopts "n:" opt; do
   case ${opt} in
   n)
     POSTGRES_NAMESPACE="$OPTARG"
-    ;;
-  m)
-    METADATA_NAME="$OPTARG"
-    ;;
-  u)
-    METADATA_UID="$OPTARG"
     ;;
   \?)
     usage
@@ -68,6 +56,9 @@ oc create namespace $POSTGRES_NAMESPACE
 
 echo "Checking the '/tmp' directory..."
 ls -al /tmp
+
+METADATA_NAME = $(oc get configmap -n $namespace operator-info -o json | jq -r '.data.METADATA_NAME')
+METADATA_UID = $(oc get configmap -n $namespace operator-info -o json | jq -r '.data.METADATA_UID')
 
 if [[ ! -z $METADATA_UID && ! -z $METADATA_NAME ]]; then
   oc process -n openshift postgresql-persistent --param-file=/tmp/postgres.env >/tmp/postgres.json
