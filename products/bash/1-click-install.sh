@@ -201,8 +201,8 @@ if [[ -z "${defaultBlockStorage// /}" ]]; then
 fi
 
 if [[ -z "${defaultFileStorage// /}" ]]; then
-  echo -e "$info INFO: Default file storage parameter is empty. Setting the default of 'cp4i-block-performance' for it."
-  defaultFileStorage="cp4i-block-performance"
+  echo -e "$info INFO: Default file storage parameter is empty. Setting the default of 'ibmc-file-gold-gid' for it."
+  defaultFileStorage="ibmc-file-gold-gid"
 fi
 
 if [[ "$MISSING_PARAMS" == "true" ]]; then
@@ -247,8 +247,8 @@ echo -e "$INFO [INFO] Docker registry username: '$DOCKER_REGISTRY_USER'"
 echo -e "$INFO [INFO] Environment for installation: '$ENVIRONMENT'"
 echo -e "$INFO [INFO] If using fast storage for the installation: '$useFastStorageClass'"
 echo -e "$INFO [INFO] If testing the driveway dent deletion demo E2E: '$testDrivewayDentDeletionDemoE2E'"
-echo -e "$info Default block storage: '$defaultBlockStorage'"
-echo -e "$info Default file storage: '$defaultFileStorage'"
+echo -e "$info [INFO] Default block storage: '$defaultBlockStorage'"
+echo -e "$info [INFO] Default file storage: '$defaultFileStorage'"
 
 divider
 
@@ -479,6 +479,9 @@ if [[ "$demoPreparation" == "true" || "$drivewayDentDeletionDemo" == "true" || "
   sed -i -e "s/EVENT_ENABLED_INSURANCE_DEMO/$eventEnabledInsuranceDemo/g" $CURRENT_DIR_WITHOUT_DOT_SLASH/demos.json
   sed -i -e "s/MAPPING_ASSIST_DEMO/$mappingAssistDemo/g" $CURRENT_DIR_WITHOUT_DOT_SLASH/demos.json
   sed -i -e "s/WEATHER_CHATBOT_DEMO/$weatherChatbotDemo/g" $CURRENT_DIR_WITHOUT_DOT_SLASH/demos.json
+
+echo -e "$info [INFO] Default file storage: '$defaultFileStorage'"
+
 
   if $CURRENT_DIR/setup-demos.sh -i $CURRENT_DIR_WITHOUT_DOT_SLASH/demos.json -o $CURRENT_DIR_WITHOUT_DOT_SLASH/demos-output.json; then
     echo -e "$TICK [SUCCESS] Successfully setup all required addons, products and demos in the '$JOB_NAMESPACE' namespace"
