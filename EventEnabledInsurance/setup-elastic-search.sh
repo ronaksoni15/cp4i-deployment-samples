@@ -20,6 +20,7 @@
 #
 #   With overridden values
 #     ./setup-elastic-search.sh -n <NAMESPACE> -e <ELASTIC_NAMESPACE>
+#
 
 function usage() {
   echo "Usage: $0 -n <NAMESPACE> -e <ELASTIC_NAMESPACE>"
@@ -144,8 +145,11 @@ wait_for_subscription $ELASTIC_NAMESPACE $ELASTIC_SUBSCRIPTION_NAME
 
 echo -e "\n----------------------------------------------------------------------------------------------------------------------------------------------------------\n"
 
-METADATA_NAME = $(oc get configmap -n $namespace operator-info -o json | jq -r '.data.METADATA_NAME')
-METADATA_UID = $(oc get configmap -n $namespace operator-info -o json | jq -r '.data.METADATA_UID')
+json=$(oc get configmap -n $NAMESPACE operator-info -o json)
+if [[ $? == 0 ]]; then
+  METADATA_NAME=$(oc get configmap -n $NAMESPACE operator-info -o json | jq -r '.data.METADATA_NAME')
+  METADATA_UID=$(oc get configmap -n $NAMESPACE operator-info -o json | jq -r '.data.METADATA_UID')
+fi
 
 cat <<EOF | oc apply -f -
 apiVersion: elasticsearch.k8s.elastic.co/v1
