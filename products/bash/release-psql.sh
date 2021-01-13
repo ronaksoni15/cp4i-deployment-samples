@@ -38,8 +38,9 @@ while getopts "n:" opt; do
 done
 
 CURRENT_DIR=$(dirname $0)
+CURRENT_DIR_WITHOUT_DOT_SLASH=${CURRENT_DIR//.\//}
 
-echo "Postgres namespace for release-psql: '$POSTGRES_NAMESPACE'\n"
+echo -e "Postgres namespace for release-psql: '$POSTGRES_NAMESPACE'\n"
 
 echo "Installing PostgreSQL..."
 cat <<EOF >/tmp/postgres.env
@@ -52,13 +53,18 @@ cat <<EOF >/tmp/postgres.env
   POSTGRESQL_VERSION=10
 EOF
 
+oc create namespace ${POSTGRES_NAMESPACE}
+
+echo "INFO: oc process -n openshift postgresql-persistent --param-file=/tmp/postgres.env | oc apply -n ${POSTGRES_NAMESPACE} -f -"
+oc process -n openshift postgresql-persistent --param-file=/tmp/postgres.env | oc apply -n ${POSTGRES_NAMESPACE} -f -
+
 oc create namespace $POSTGRES_NAMESPACE
 
-echo "Checking the '/tmp' directory..."
-ls -al /tmp
-
-METADATA_NAME = $(oc get configmap -n $namespace operator-info -o json | jq -r '.data.METADATA_NAME')
-METADATA_UID = $(oc get configmap -n $namespace operator-info -o json | jq -r '.data.METADATA_UID')
+json=$(oc get configmap -n $namespace operator-info -o json)
+if [[ $? == 0 ]]; then
+  METADATA_NAME=$(echo $json | tr '\r\n' ' ' | jq -r '.data.METADATA_NAME')
+  METADATA_UID=$(echo $json | tr '\r\n' ' ' | jq -r '.data.METADATA_UID')
+fi
 
 if [[ ! -z $METADATA_UID && ! -z $METADATA_NAME ]]; then
   oc process -n openshift postgresql-persistent --param-file=/tmp/postgres.env >/tmp/postgres.json
@@ -77,8 +83,8 @@ DB_POD=$(oc get pod -n $POSTGRES_NAMESPACE -l name=postgresql -o jsonpath='{.ite
 echo "INFO: Found DB pod as: ${DB_POD}"
 
 echo "INFO: Changing DB parameters for Debezium support"
-oc exec -n $POSTGRES_NAMESPACE -i $DB_POD \
-  -- psql <<EOF
+oc exec -n ${POSTGRES_NAMESPACE} -i $DB_POD \
+-- psql <<EOF
 ALTER SYSTEM SET wal_level = logical;
 ALTER SYSTEM SET max_wal_senders=10;
 ALTER SYSTEM SET max_replication_slots=10;
