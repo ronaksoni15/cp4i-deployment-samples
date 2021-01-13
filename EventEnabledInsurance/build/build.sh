@@ -115,6 +115,12 @@ fi
 
 divider
 
+json=$(oc get configmap -n $namespace operator-info -o json)
+if [[ $? == 0 ]]; then
+  METADATA_NAME=$(echo $json | tr '\r\n' ' ' | jq -r '.data.METADATA_NAME')
+  METADATA_UID=$(echo $json | tr '\r\n' ' ' | jq -r '.data.METADATA_UID')
+fi
+
 CONFIGURATIONS="[serverconf-$SUFFIX, keystore-$SUFFIX, application.kdb, application.sth, application.jks, policyproject-$SUFFIX, setdbparms-$SUFFIX]"
 
 echo "INFO: Creating the pipeline to build and deploy the EEI apps in '$namespace' namespace"
@@ -123,6 +129,8 @@ if cat $CURRENT_DIR/pipeline.yaml |
   sed "s#{{CONFIGURATIONS}}#'$CONFIGURATIONS'#g;" |
   sed "s#{{FORKED_REPO}}#$REPO#g;" |
   sed "s#{{BRANCH}}#$BRANCH#g;" |
+  sed "s#{{METADATA_NAME}}#$METADATA_NAME#g;" |
+  sed "s#{{METADATA_UID}}#$METADATA_UID#g;" |
   oc apply -n ${namespace} -f -; then
   echo -e "\n$tick INFO: Successfully applied the pipeline to build and deploy the EEI apps in '$namespace' namespace"
 else
