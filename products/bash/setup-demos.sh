@@ -555,7 +555,7 @@ for EACH_ADDON in $(echo $REQUIRED_ADDONS_JSON | jq -r '. | keys[]'); do
   case ${EACH_ADDON} in
   postgres)
     echo -e "$INFO [INFO] Releasing postgres in the '$NAMESPACE' namespace...\n"
-    if ! $SCRIPT_DIR/release-psql.sh -n "$NAMESPACE" -m "$METADATA_NAME" -u "$METADATA_UID"; then
+    if ! $SCRIPT_DIR/release-psql.sh -n "$NAMESPACE"; then
       update_conditions "Failed to release PostgreSQL in the '$NAMESPACE' namespace" "Releasing"
       update_phase "Failed"
       FAILED_INSTALL_ADDONS_LIST+=($EACH_ADDON)
