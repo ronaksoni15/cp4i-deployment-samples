@@ -5,13 +5,11 @@ metadata:
   labels:
     app: pipeline-eei
     demo: eei
-  $(if [[ ! -z ${METADATA_UID} && ! -z ${METADATA_NAME} ]]; then
   ownerReferences:
     - apiVersion: integration.ibm.com/v1beta1
       kind: Demo
       name: "{{METADATA_NAME}}"
       uid: "{{METADATA_UID}}"
-  fi)
 spec:
   workspaces:
     - name: git-source
